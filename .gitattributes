@@ -1,0 +1,28 @@
+# Configurar manejo de finales de línea
+* text=auto
+
+# Archivos de texto que siempre deben normalizarse y usar LF
+*.js text eol=lf
+*.json text eol=lf
+*.ts text eol=lf
+*.md text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.html text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.gitignore text eol=lf
+*.gitattributes text eol=lf
+
+# Archivos específicos de Windows que deben usar CRLF
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Archivos binarios que no deben ser modificados
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.pdf binary
