@@ -11,14 +11,17 @@ import userRoutes from "./routes/users.js";
 // Load environment variables
 dotenv.config();
 
-const frontendURL = process.env.FRONTEND_URL;
+const frontendURL = process.env.FRONTEND_URL || "http://localhost:3000";
+const corsOrigins = frontendURL.includes(",")
+  ? frontendURL.split(",").map((url) => url.trim())
+  : frontendURL;
 
 // Initialize Express
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: frontendURL,
+    origin: corsOrigins,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -27,7 +30,7 @@ const io = new Server(server, {
 // Set up middleware
 app.use(
   cors({
-    origin: frontendURL,
+    origin: corsOrigins,
     credentials: true,
   })
 );
@@ -77,11 +80,11 @@ async function startServer() {
         password: "Admin123!",
         role: "admin",
       });
-      console.log("Default admin user created");
+      console.log("✅ Default admin user created");
     }
 
     server.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
+      console.log(`✅ Server running on port ${PORT}`);
     });
   } catch (error) {
     console.error("Unable to connect to the database:", error);

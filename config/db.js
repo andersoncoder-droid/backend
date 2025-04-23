@@ -9,21 +9,34 @@ const isRailway =
 let sequelize;
 
 if (isRailway) {
-  sequelize = new Sequelize(process.env.DATABASE_URL, {
-    dialect: "postgres",
-    host: process.env.PGHOST,
-    port: process.env.PGPORT,
-    username: process.env.PGUSER,
-    password: process.env.PGPASSWORD,
-    database: process.env.PGDATABASE,
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
+  if (process.env.DATABASE_URL) {
+    sequelize = new Sequelize(process.env.DATABASE_URL, {
+      dialect: "postgres",
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
       },
-    },
-    logging: false,
-  });
+      logging: false,
+    });
+  } else {
+    sequelize = new Sequelize({
+      dialect: "postgres",
+      host: process.env.PGHOST,
+      port: process.env.PGPORT,
+      username: process.env.PGUSER,
+      password: process.env.PGPASSWORD,
+      database: process.env.PGDATABASE,
+      dialectOptions: {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      },
+      logging: false,
+    });
+  }
   console.log("Using Railway PostgreSQL configuration");
 } else {
   sequelize = new Sequelize(
