@@ -3,18 +3,28 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const isProduction = process.env.NODE_ENV === "production";
+const isRailway =
+  process.env.RAILWAY_ENVIRONMENT || process.env.RAILWAY_STATIC_URL;
 
-if (isProduction && process.env.DATABASE_URL) {
+let sequelize;
+
+if (isRailway) {
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: "postgres",
+    host: process.env.PGHOST,
+    port: process.env.PGPORT,
+    username: process.env.PGUSER,
+    password: process.env.PGPASSWORD,
+    database: process.env.PGDATABASE,
     dialectOptions: {
       ssl: {
         require: true,
         rejectUnauthorized: false,
       },
     },
+    logging: false,
   });
+  console.log("Using Railway PostgreSQL configuration");
 } else {
   sequelize = new Sequelize(
     process.env.DB_NAME,
@@ -33,8 +43,10 @@ if (isProduction && process.env.DATABASE_URL) {
               }
             : false,
       },
+      logging: false,
     }
   );
+  console.log("Using local PostgreSQL configuration");
 }
 
 export default sequelize;
