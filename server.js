@@ -50,11 +50,11 @@ startServer();
 async function startServer() {
   try {
     await sequelize.authenticate();
-    console.log("Database connection established successfully.");
+    console.log("✅ Database connection established successfully.");
 
     // Sync models with database
     await sequelize.sync();
-    console.log("Database models synchronized.");
+    console.log("✅ Database models synchronized.");
 
     // Create default admin user if it doesn't exist
     const User = (await import("./models/User.js")).default;
@@ -64,7 +64,7 @@ async function startServer() {
 
     if (!adminExists) {
       await User.create({
-        username: "admin",
+        name: "Administrator",
         email: "admin@decimetrix.com",
         password: "Admin123!",
         role: "admin",
