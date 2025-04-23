@@ -11,15 +11,14 @@ import userRoutes from "./routes/users.js";
 // Load environment variables
 dotenv.config();
 
+const frontendURL = process.env.FRONTEND_URL;
+
 // Initialize Express
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://frontend-green-alpha-15.vercel.app/login"
-        : "*",
+    origin: frontendURL,
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   },
@@ -28,10 +27,7 @@ const io = new Server(server, {
 // Set up middleware
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? "https://frontend-green-alpha-15.vercel.app/login"
-        : "*",
+    origin: frontendURL,
     credentials: true,
   })
 );
