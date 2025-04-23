@@ -16,13 +16,25 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*", // In production, set this to your frontend URL
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://frontend-green-alpha-15.vercel.app/login"
+        : "*",
     methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
   },
 });
 
 // Set up middleware
-app.use(cors());
+app.use(
+  cors({
+    origin:
+      process.env.NODE_ENV === "production"
+        ? "https://frontend-green-alpha-15.vercel.app/login"
+        : "*",
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 // Store io instance for use in routes
