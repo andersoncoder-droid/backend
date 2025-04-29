@@ -1,20 +1,21 @@
-import express from 'express';
-import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import express from "express";
+import jwt from "jsonwebtoken";
+import User from "../models/User.js";
+import bcrypt from "bcrypt";
 
 const router = express.Router();
 
 // @route   POST /api/auth/register
 // @desc    Register a user
 // @access  Public
-router.post('/register', async (req, res) => {
+router.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
 
   try {
     // Check if user already exists
     let user = await User.findOne({ where: { email } });
     if (user) {
-      return res.status(400).json({ msg: 'User already exists' });
+      return res.status(400).json({ msg: "User already exists" });
     }
 
     // Create new user
@@ -22,22 +23,22 @@ router.post('/register', async (req, res) => {
       username,
       email,
       password,
-      role: role || 'operator' // Default to operator if no role provided
+      role: role || "operator", // Default to operator if no role provided
     });
 
     // Create JWT payload
     const payload = {
       user: {
         id: user.id,
-        role: user.role
-      }
+        role: user.role,
+      },
     };
 
     // Sign token
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '24h' },
+      { expiresIn: "24h" },
       (err, token) => {
         if (err) throw err;
         res.json({ token });
@@ -45,50 +46,60 @@ router.post('/register', async (req, res) => {
     );
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Server error');
+    res.status(500).send("Server error");
   }
 });
 
 // @route   POST /api/auth/login
 // @desc    Authenticate user & get token
 // @access  Public
-router.post('/login', async (req, res) => {
+router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Check if user exists
+    console.log(`Intento de login con email: ${email}`);
+
+    // Buscar usuario
     const user = await User.findOne({ where: { email } });
+
     if (!user) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      console.log("Usuario no encontrado");
+      return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    // Check password
-    const isMatch = await user.comparePassword(password);
+    console.log(`Usuario encontrado: ${user.email}, role: ${user.role}`);
+    console.log(`Contraseña almacenada (hash): ${user.password}`);
+
+    // Comparar contraseña
+    const isMatch = await bcrypt.compare(password, user.password);
+    console.log(`Resultado de comparación de contraseñas: ${isMatch}`);
+
     if (!isMatch) {
-      return res.status(400).json({ msg: 'Invalid credentials' });
+      console.log("Contraseña incorrecta");
+      return res.status(401).json({ message: "Credenciales inválidas" });
     }
 
-    // Create JWT payload
+    // Crear JWT payload
     const payload = {
       user: {
         id: user.id,
-        role: user.role
-      }
+        role: user.role,
+      },
     };
 
-    // Sign token
+    // Firmar token
     jwt.sign(
       payload,
       process.env.JWT_SECRET,
-      { expiresIn: '24h' },
+      { expiresIn: "24h" },
       (err, token) => {
         if (err) throw err;
         res.json({ token });
       }
     );
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+    console.error("❌ Error en login:", err);
+    res.status(500).send("❌ Server error");
   }
 });
 

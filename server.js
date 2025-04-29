@@ -69,15 +69,20 @@ async function startServer() {
 
     // Create default admin user if it doesn't exist
     const User = (await import("./models/User.js")).default;
+    const bcrypt = (await import("bcrypt")).default;
     const adminExists = await User.findOne({
       where: { email: "admin@decimetrix.com" },
     });
 
     if (!adminExists) {
+      // Hash the password before creating the user
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash("Admin123!", salt);
+      
       await User.create({
         name: "Administrator",
         email: "admin@decimetrix.com",
-        password: "Admin123!",
+        password: hashedPassword,
         role: "admin",
       });
       console.log("✅ Default admin user created");
