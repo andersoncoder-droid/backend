@@ -1,5 +1,12 @@
+// middleware/auth.js
+// Provides authentication and authorization middleware for protecting routes.
+
 import jwt from "jsonwebtoken";
 
+/**
+ * Middleware to verify JWT token from the request header.
+ * Adds the decoded user to req.user if valid.
+ */
 export const verifyToken = (req, res, next) => {
   const token = req.header("x-auth-token");
 
@@ -16,9 +23,13 @@ export const verifyToken = (req, res, next) => {
   }
 };
 
+/**
+ * Middleware to authorize user roles for protected routes.
+ * @param {string[]} roles - Array of allowed roles (e.g., ['admin'])
+ */
 export const authorizeRole = (roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) { // Changed 'rol' to 'role'
+    if (!roles.includes(req.user.role)) {
       return res.status(403).json({ msg: "Not authorized." });
     }
     next();

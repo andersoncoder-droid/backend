@@ -1,3 +1,6 @@
+// routes/auth.js
+// Provides authentication endpoints for user registration and login.
+
 import express from "express";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
@@ -5,9 +8,11 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 
-// @route   POST /api/auth/register
-// @desc    Register a user
-// @access  Public
+/**
+ * POST /api/auth/register
+ * Register a new user. Returns a JWT token on success.
+ * Public route.
+ */
 router.post("/register", async (req, res) => {
   const { username, email, password, role } = req.body;
 
@@ -50,9 +55,11 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// @route   POST /api/auth/login
-// @desc    Authenticate user & get token
-// @access  Public
+/**
+ * POST /api/auth/login
+ * Authenticate user and return a JWT token if credentials are valid.
+ * Public route.
+ */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
