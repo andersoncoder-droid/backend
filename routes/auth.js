@@ -8,6 +8,44 @@ import bcrypt from "bcrypt";
 
 const router = express.Router();
 
+// Función para crear usuarios básicos
+async function createBasicUsers() {
+  try {
+    // Crear usuario administrador si no existe
+    let admin = await User.findOne({ where: { email: "admin@decimetrix.com" } });
+    if (!admin) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash("Admin123!", salt);
+      await User.create({
+        username: "Administrador",
+        email: "admin@decimetrix.com",
+        password: hashedPassword,
+        role: "admin",
+      });
+      console.log("Usuario administrador creado");
+    }
+
+    // Crear usuario operador si no existe
+    let operator = await User.findOne({ where: { email: "operator@decimetrix.com" } });
+    if (!operator) {
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash("Operator123!", salt);
+      await User.create({
+        username: "Operador",
+        email: "operator@decimetrix.com",
+        password: hashedPassword,
+        role: "operator",
+      });
+      console.log("Usuario operador creado");
+    }
+  } catch (err) {
+    console.error("Error al crear usuarios básicos:", err);
+  }
+}
+
+// Llamar a la función para crear usuarios básicos
+createBasicUsers();
+
 /**
  * POST /api/auth/register
  * Register a new user. Returns a JWT token on success.
@@ -23,11 +61,15 @@ router.post("/register", async (req, res) => {
       return res.status(400).json({ msg: "User already exists" });
     }
 
-    // Create new user
+    // Encrypt password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // Create new user with encrypted password
     user = await User.create({
       username,
       email,
-      password,
+      password: hashedPassword, // Use hashed password
       role: role || "operator", // Default to operator if no role provided
     });
 
