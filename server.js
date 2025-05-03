@@ -12,14 +12,17 @@ import assetRoutes from "./routes/assets.js";
 import userRoutes from "./routes/users.js";
 
 // Load environment variables from .env file
+// ...existing code...
+
+// Cargar variables de entorno desde .env
 dotenv.config();
 
 const frontendURL = process.env.FRONTEND_URL || "http://localhost:3000";
 const corsOrigins = frontendURL.includes(",")
   ? frontendURL.split(",").map((url) => url.trim())
-  : frontendURL;
+  : [frontendURL];
 
-// Initialize Express application and HTTP server
+// Inicializar Express y HTTP server
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, {
@@ -30,8 +33,7 @@ const io = new Server(server, {
   },
 });
 
-// Set up Socket.io for real-time communication
-// Set up middleware for CORS and JSON parsing
+// Middleware para CORS y JSON parsing
 app.use(
   cors({
     origin: corsOrigins,

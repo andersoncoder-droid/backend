@@ -16,39 +16,49 @@ import User from "./User.js";
  *   - comments: Optional comments
  *   - createdBy: User ID who created the asset
  */
-const Asset = sequelize.define("Asset", {
-  id: {
-    type: DataTypes.INTEGER,
-    primaryKey: true,
-    autoIncrement: true,
-  },
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-  type: {
-    type: DataTypes.ENUM("well", "motor", "transformer"),
-    allowNull: false,
-  },
-  latitude: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  longitude: {
-    type: DataTypes.FLOAT,
-    allowNull: false,
-  },
-  comments: {
-    type: DataTypes.TEXT,
-  },
-  createdBy: {
-    type: DataTypes.INTEGER,
-    references: {
-      model: User,
-      key: "id",
+const Asset = sequelize.define(
+  "Asset",
+  {
+    id: {
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+    },
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    type: {
+      type: DataTypes.ENUM("well", "motor", "transformer"),
+      allowNull: false,
+    },
+    latitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    longitude: {
+      type: DataTypes.FLOAT,
+      allowNull: false,
+    },
+    comments: {
+      type: DataTypes.TEXT,
+    },
+    createdBy: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: User,
+        key: "id",
+      },
+    },
+    createdAt: {
+      type: DataTypes.DATE,
+      defaultValue: DataTypes.NOW,
     },
   },
-});
+  {
+    timestamps: true, // Enable timestamps
+  }
+);
 
 // Define relationships between Asset and User
 Asset.belongsTo(User, { foreignKey: "createdBy", as: "creator" }); // Each asset is created by a user

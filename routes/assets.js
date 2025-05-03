@@ -50,6 +50,7 @@ router.post("/", verifyToken, async (req, res) => {
       longitude,
       comments,
       createdBy: req.user.id,
+      createdAt: new Date().toISOString() // Agregar la fecha y hora de creación
     });
 
     // Emit socket event for real-time update (we'll implement this later)
